@@ -1,7 +1,7 @@
 # OdpNetMicroMapper
 A convention based Oracle-only ORM. Columns in database with underscores will be translated to Camel Case. E.g. work_phone will be loaded into property WorkPhone.
 
-            var orm = new OdpNetMicroMapper();
+            var orm = new DbMapper();
 
 Fetch all columns from a table row
 
