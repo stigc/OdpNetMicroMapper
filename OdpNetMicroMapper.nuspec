@@ -1,0 +1,23 @@
+﻿<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>OdpNetMicroMapper</id>
+    <version>1.1</version>
+    <title>OdpNetMicroMapper</title>
+    <authors>Stig Christensen</authors>
+    <owners>BankInvest</owners>
+    <licenseUrl>http://www.bankinvest.dk</licenseUrl>
+    <projectUrl>http://build</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Easy and simple Oracle access</description>
+    <releaseNotes></releaseNotes>
+    <copyright>Copyright 2012</copyright>
+    <tags>odp.net</tags>
+  </metadata>
+  <files>
+    <file src="output\OdpNetMicroMapper.dll" target="lib" />
+    <file src="output\OdpNetMicroMapper.pdb" target="lib" />
+  </files>
+</package>
+
+
