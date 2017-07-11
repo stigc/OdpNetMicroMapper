@@ -419,42 +419,6 @@ namespace OdpNetMicroMapper
             return d.RecordToObject<T>();
         }
 
-
-        //TODO: SMELLY, delete?
-        public IEnumerable<dynamic> ExecuteProcedure2(string procedureName, object parameters)
-        {
-            using (var connection = CreateOrReuseConnection())
-            {
-                using (var command = CreateCommand(null, connection.GetAdoConnection(), false))
-                {
-                    DataSet ds = new DataSet();
-                    command.CommandText = procedureName;
-                    command.CommandType = CommandType.StoredProcedure;
-                    AddParameters(command, parameters.ToDictionary(), null, 0, true);
-
-                    //Execute
-                    IDbDataAdapter da = CreateOracleDataAdapter();
-                    da.SelectCommand = command;
-                    da.Fill(ds);
-
-                    //Check for out parameters
-                    foreach (IDbDataParameter p in command.Parameters)
-                    {
-                        if (p.Direction == ParameterDirection.Output
-                            && p.Value != DBNull.Value)
-                            parameters.SetPropertyValue(p.ParameterName, p.Value);
-                    }
-
-                    List<dynamic> list = new List<dynamic>();
-
-                    foreach (DataRow row in ds.Tables[0].Rows)
-                        list.Add(row.ToEntity());
-
-                    return list;
-                }
-            }
-        }
-
         public T ExecuteFunction<T>(string functionName, params object[] args)
         {
             using (var connection = CreateOrReuseConnection())

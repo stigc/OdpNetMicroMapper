@@ -469,15 +469,6 @@ namespace Tests
         }
 
         [Test]
-        public void ProcedureWithTwoOutParameters()
-        {
-            var parameters = new ProcParameters { Input = 666, EchoOutput = 0, CountOutput = 0, FundsOutput = DbMapperParameter.RefCursor };
-            var items = orm.ExecuteProcedure2("onmm.proc_with_many_out_parameters", parameters);
-            Assert.AreEqual(parameters.CountOutput, items.Count());
-            Assert.AreEqual(666, parameters.EchoOutput);
-        }
-
-        [Test]
         public void OverflowDynamic()
         {
             Assert.Throws<ApplicationException>(() => orm.Query("select 1/3 decimal_value from dual").Single());
@@ -535,7 +526,23 @@ namespace Tests
         [Test]
         public void NonQueryIgnoreErrorShouldWork()
         {
-            orm.NonQueryIgnoreError("abc");
+            orm.NonQueryIgnoreError("should not work");
+        }
+
+        [Test]
+        public void ToEntityShouldIgnoreListProperties()
+        {
+            var entity = new SomeClass()
+                .ToEntity();
+
+            var dic = entity.GetDictionary();
+
+            Assert.AreEqual(4, dic.Count);
+            Assert.IsTrue(dic.ContainsKey("Prop1"));
+            Assert.IsTrue(dic.ContainsKey("Prop2"));
+            Assert.IsTrue(dic.ContainsKey("Prop3"));
+            Assert.IsTrue(dic.ContainsKey("Prop4"));
+
         }
     }
 
@@ -567,5 +574,16 @@ namespace Tests
         public string Name { get; set; }
         public decimal Decimalvalue { get; set; }
         public DateTime? Datevalue { get; set; }
+    }
+
+    class SomeClass
+    {
+        public string Prop1 { get; set; }
+        public decimal Prop2 { get; set; }
+        public DateTime Prop3 { get; set; }
+        public int? Prop4 { get; set; }
+        public List<string> Col1 { get; set; }
+        public String[] Col2 { get; set; }
+        public Dictionary<int, int> Col3 { get; set; }
     }
 }

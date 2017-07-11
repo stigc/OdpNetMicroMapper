@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Data;
 using System.Reflection;
+using System.Collections;
 
 namespace OdpNetMicroMapper
 {
@@ -83,11 +84,12 @@ namespace OdpNetMicroMapper
             var dic = new Dictionary<string, object>();
 
             var props = o.GetType().GetProperties()
-                //.Where(x => !x.PropertyType.IsSubclassOf(typeof(ICollection)));
-                .Where(x => !x.PropertyType.IsGenericType); //ingore List<int> etc.
+                //ignore collections
+                .Where(x => x.PropertyType == typeof(string) || typeof(IEnumerable).IsAssignableFrom(x.PropertyType) == false)
+                .ToList();
 
             foreach (var item in props)
-                    dic.Add(item.Name, item.GetValue(o, null));
+                dic.Add(item.Name, item.GetValue(o, null));
 
             return new Entity(dic);
         }
