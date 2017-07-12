@@ -12,7 +12,7 @@
     <description>Easy and simple Oracle db mapper</description>
     <releaseNotes></releaseNotes>
     <copyright>Copyright 2017</copyright>
-    <tags>odp.net</tags>
+    <tags>odp.net oracle connection orm micro mapper</tags>
   </metadata>
   <files>
     <file src="output\OdpNetMicroMapper.dll" target="lib" />
