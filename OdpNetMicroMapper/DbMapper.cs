@@ -4,6 +4,7 @@ using System.Linq;
 using System.Data;
 using System.Reflection;
 using System.Configuration;
+using System.IO;
 
 namespace OdpNetMicroMapper
 {
@@ -18,21 +19,46 @@ namespace OdpNetMicroMapper
         public static volatile bool PrintSqls = false;
 
         public string ConnectionString { get; set; }
-        Type oracleConnectionType, oracleDataAdapterType;
+        Type oracleConnectionType, oracleDataAdapterType, oracleClobType;
         Connection connectionWhenCreateExternal;
         
         public DbMapper()
         {
             ConnectionString = ConfigurationManager.AppSettings["ConnectionString"];
-
-            oracleDataAdapterType = TypeFromAssembly("Oracle.DataAccess.Client.OracleDataAdapter");
-            oracleConnectionType = TypeFromAssembly("Oracle.DataAccess.Client.OracleConnection");
+            FindOracleDataTypes();
         }
 
-        private Type TypeFromAssembly(string typeAsString)
+        private void FindOracleDataTypes()
         {
-            Assembly assembly = Assembly.Load("Oracle.DataAccess");
-            Type type = assembly.GetType(typeAsString, false);
+            var prefix = "Oracle.ManagedDataAccess";
+            var assembly = FindDataAccessAssembly(prefix);
+            if (assembly == null)
+            {
+                prefix = "Oracle.DataAccess";
+                assembly = FindDataAccessAssembly(prefix);
+            }
+            if (assembly == null) throw new FileNotFoundException($"Unable to load assembly {prefix}");
+
+            oracleDataAdapterType = TypeFromAssembly(assembly, $"{prefix}.Client.OracleDataAdapter");
+            oracleConnectionType = TypeFromAssembly(assembly, $"{prefix}.Client.OracleConnection");
+            oracleClobType = TypeFromAssembly(assembly, $"{prefix}.Types.OracleClob");
+        }
+
+        private Assembly FindDataAccessAssembly(string partialName)
+        {
+            try
+            {
+                return Assembly.Load(partialName);
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+        private Type TypeFromAssembly(Assembly assembly, string typeAsString)
+        {
+            var type = assembly.GetType(typeAsString, false);
             return type;
         }
 
@@ -88,7 +114,6 @@ namespace OdpNetMicroMapper
 
         public object CreateClob(string text, IDbConnection connection)
         {
-            var oracleClobType = TypeFromAssembly("Oracle.DataAccess.Types.OracleClob");
             object clob = Activator.CreateInstance(oracleClobType, new object[] { connection });
             MethodInfo method = oracleClobType.GetMethod("Append", new Type[] { typeof(char[]), typeof(int), typeof(int) });
             method.Invoke(clob, new object[] { text.ToCharArray(), 0, text.Length });
