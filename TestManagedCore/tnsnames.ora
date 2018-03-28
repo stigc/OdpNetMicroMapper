@@ -1,0 +1,149 @@
+#  ____   ____    ___   ____   _   _  _  __ _____  ___  ___   _   _  ____    _  __ _      ___  _____  _   _  _____  _____  ____  
+# |  _ \ |  _ \  / _ \ |  _ \ | | | || |/ /|_   _||_ _|/ _ \ | \ | |/ ___|  | |/ /| |    |_ _|| ____|| \ | ||_   _|| ____||  _ \ 
+# | |_) || |_) || | | || | | || | | || ' /   | |   | || | | ||  \| |\___ \  | ' / | |     | | |  _|  |  \| |  | |  |  _|  | |_) |
+# |  __/ |  _ < | |_| || |_| || |_| || . \   | |   | || |_| || |\  | ___) | | . \ | |___  | | | |___ | |\  |  | |  | |___ |  _ < 
+# |_|    |_| \_\ \___/ |____/  \___/ |_|\_\  |_|  |___|\___/ |_| \_||____/  |_|\_\|_____||___||_____||_| \_|  |_|  |_____||_| \_\
+#
+
+
+AUDDB =
+  (DESCRIPTION =
+    (ADDRESS = (PROTOCOL = TCP)(HOST = BICLUORA03.bi.local)(PORT = 1521))
+    (CONNECT_DATA = (SID = AUDDB))
+  )
+
+CI =
+   (DESCRIPTION =
+   (ADDRESS = (PROTOCOL = TCP)(HOST = BICLUORA01.bi.local)(PORT = 1521))
+   (CONNECT_DATA = (SID = ORCL))
+   )
+
+INV =
+   (DESCRIPTION = 
+   (ADDRESS = (PROTOCOL=TCP) (HOST=bidbs2003) (PORT=1521))
+   (CONNECT_DATA = (SERVICE_NAME=invision))
+   )
+
+INVISION = 
+   (DESCRIPTION = 
+   (ADDRESS = (PROTOCOL=TCP) (HOST=bidbs2003) (PORT=1521))
+   (CONNECT_DATA = (SERVICE_NAME=invision))
+   )
+
+PMFORUM =
+   (DESCRIPTION = 
+   (ADDRESS = (PROTOCOL = TCP)(HOST = BICLUORA01.bi.local)(PORT = 1521))
+   (CONNECT_DATA = (SID = ORCL))
+   )
+
+ORA_ALIAS =
+   (DESCRIPTION =
+   (ADDRESS = (PROTOCOL = TCP)(HOST = BICLUORA01.bi.local)(PORT = 1521))
+   (CONNECT_DATA = (SID = ORCL))
+   )
+
+#Herunder er der kun testinstanser  
+
+INV_TEST =  (DESCRIPTION =
+  (ADDRESS_LIST =
+  (ADDRESS = (PROTOCOL = TCP)(HOST = bidbs2004.bi.local)(PORT = 1521))
+  )
+  (CONNECT_DATA =
+  (SERVICE_NAME = Invision)
+  )
+  )
+
+CIUDV =
+   (DESCRIPTION =
+   (ADDRESS = (PROTOCOL = TCP)(HOST = BICLUORA03.bi.local)(PORT = 1521))
+   (CONNECT_DATA = (SID = CIUDV))
+   )
+  
+TEST =
+   (DESCRIPTION =
+   (ADDRESS = (PROTOCOL = TCP)(HOST = BICLUORA03.bi.local)(PORT = 1521))
+   (CONNECT_DATA = (SID = TEST))
+   )
+
+TSTDAILY =
+   (DESCRIPTION =
+   (ADDRESS = (PROTOCOL = TCP)(HOST = BICLUORA03.bi.local)(PORT = 1521))
+   (CONNECT_DATA = (SID = TSTDAILY))
+   )
+
+FPDTEST =
+   (DESCRIPTION =
+   (ADDRESS = (PROTOCOL = TCP)(HOST = BICLUORA03.bi.local)(PORT = 1521))
+   (CONNECT_DATA = (SID = FPDTEST))
+   )
+
+SUPDAILY  = 
+ (DESCRIPTION =
+    (ADDRESS = (PROTOCOL = TCP)(HOST = BICLUORA03.bi.local)(PORT = 1521))
+    (CONNECT_DATA = (SID = SUPDAILY))
+    )
+
+INTFID  = 
+ (DESCRIPTION =
+    (ADDRESS = (PROTOCOL = TCP)(HOST = BICLUORA03.bi.local)(PORT = 1521))
+    (CONNECT_DATA = (SID = INTFID))
+    )
+
+INTSHARE  = 
+ (DESCRIPTION =
+    (ADDRESS = (PROTOCOL = TCP)(HOST = BICLUORA03.bi.local)(PORT = 1521))
+    (CONNECT_DATA = (SID = INTSHARE))
+    )
+
+DEVSHARE  =
+  (DESCRIPTION =
+    (ADDRESS = (PROTOCOL = TCP)(HOST = BICLUORA03.bi.local)(PORT = 1521))
+    (CONNECT_DATA = (SID = CIUDV))
+    )
+
+INTFMS  =
+   (DESCRIPTION = 
+   (ADDRESS = (PROTOCOL = TCP)(HOST = BICLUORA03.bi.local)(PORT = 1521))
+   (CONNECT_DATA = (SID = FMSREF))
+   )
+
+TSTWEEK  =
+  (DESCRIPTION =
+  (ADDRESS = (PROTOCOL = TCP)(HOST = BICLUORA03.bi.local)(PORT = 1521))
+  (CONNECT_DATA = (SID = TEST))
+  )
+
+BIZTEST =
+ (DESCRIPTION =
+ (ADDRESS_LIST =
+ (ADDRESS = (PROTOCOL = TCP)(HOST = BICLUORA03.bi.local)(PORT = 1521))
+ )
+ (CONNECT_DATA =
+ (SERVER = DEDICATED)
+ (SERVICE_NAME = BIZTEST))
+ )
+
+INVWEEK =
+ (DESCRIPTION=
+ (ADDRESS= (PROTOCOL=TCP) (HOST=bidbs2004) (PORT=1521))
+ (CONNECT_DATA =(SERVICE_NAME=week))
+ )
+
+INVUDV =
+ (DESCRIPTION=
+ (ADDRESS= (PROTOCOL=TCP) (HOST=bidbs2004) (PORT=1521))
+ (CONNECT_DATA =(SERVICE_NAME=udv))
+ )
+
+INVPRJKT =
+  (DESCRIPTION=
+  (ADDRESS = (PROTOCOL = TCP)(HOST=bidbs2004.bi.local)(PORT=1521))
+  (CONNECT_DATA=
+  (SERVICE_NAME=INVPRJKT))
+  )
+
+TSTPRJKT =
+   (DESCRIPTION =
+   (ADDRESS = (PROTOCOL = TCP)(HOST = BICLUORA03.bi.local)(PORT = 1521))
+   (CONNECT_DATA = (SID = TSTPRJKT))
+   )
