@@ -3,25 +3,25 @@ using System.Linq;
 
 namespace OdpNetMicroMapper
 {
-    class SqlTokens
+    public class SqlTokens
     {
-        IDictionary<string, object> dic = new Dictionary<string, object>();
+        private readonly IDictionary<string, object> _dic;
 
         public SqlTokens(IDictionary<string, object> dic)
         {
-            this.dic = dic;
+            _dic = dic;
         }
 
         public IDictionary<string, object> GetNonNullableFieldsAndValues()
         {
-            return dic.Where(x => x.Value != null)
+            return _dic.Where(x => x.Value != null)
                 .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
         }
 
         public string AsWhereClause(int index = 0)
         {
             string sql = "";
-            foreach (string token in dic.Keys)
+            foreach (string token in _dic.Keys)
             {
                 sql += token + "=:" + index + " and ";
                 index++;
@@ -32,14 +32,12 @@ namespace OdpNetMicroMapper
 
         public string AsColumnNames(bool includeNullFields = true)
         {
-            int index = 0;
             string sql = "";
-            foreach (string token in dic.Keys)
+            foreach (string token in _dic.Keys)
             {
-                if (dic[token] != null || includeNullFields)
+                if (_dic[token] != null || includeNullFields)
                 {
                     sql += token.UnCammelCase() + ", ";
-                    index++;
                 }
             }
             sql = sql.RemoveInEnd(", ");
@@ -50,9 +48,9 @@ namespace OdpNetMicroMapper
         {
             int index = 0;
             string sql = "";
-            foreach (string token in dic.Keys)
+            foreach (string token in _dic.Keys)
             {
-                if (dic[token] != null || includeNullFields)
+                if (_dic[token] != null || includeNullFields)
                 {
                     sql += ":" + index + ", ";
                     index++;
@@ -65,7 +63,7 @@ namespace OdpNetMicroMapper
         public string AsSetClause(int index = 0)
         {
             string sql = "set ";
-            foreach (string token in dic.Keys)
+            foreach (string token in _dic.Keys)
             {
                 sql += token + "=:" + index + ", ";
                 index++;

@@ -114,8 +114,8 @@ namespace OdpNetMicroMapper
 
         public object CreateClob(string text, IDbConnection connection)
         {
-            object clob = Activator.CreateInstance(_oracleClobType, new object[] { connection });
-            MethodInfo method = _oracleClobType.GetMethod("Append", new Type[] { typeof(char[]), typeof(int), typeof(int) });
+            var clob = Activator.CreateInstance(_oracleClobType, connection);
+            var method = _oracleClobType.GetMethod("Append", new[] { typeof(char[]), typeof(int), typeof(int) });
             method.Invoke(clob, new object[] { text.ToCharArray(), 0, text.Length });
             return clob;
         }
@@ -140,7 +140,7 @@ namespace OdpNetMicroMapper
             return cmd;
         }
 
-        private void SetParameter(IDbDataParameter parameter, object value, string columnName, IDbCommand cmd, Type type = null)
+        private void SetParameter(IDbDataParameter parameter, object value, IDbCommand cmd, Type type = null)
         {
             if (value == null)
             {
@@ -201,22 +201,22 @@ namespace OdpNetMicroMapper
 
         public void Insert(object item, string dbName)
         {
-            Entity entity = item.ToEntity();
+            var entity = item.ToEntity();
             entity.TableName = dbName;
             Insert(entity);
         }
 
         public void Insert(Entity item)
         {
-            SqlTokens sqlTokens = new SqlTokens(item.GetDictionaryInDbStyle(true));
-            string sql = "insert into " + item.TableName
+            var sqlTokens = new SqlTokens(item.GetDictionaryInDbStyle(true));
+            var sql = "insert into " + item.TableName
                 + " (" + sqlTokens.AsColumnNames(false) + ") select " + sqlTokens.AsIndcies(false) + " from dual";
 
             using (var connection = CreateOrReuseConnection())
             {
                 using (var command = CreateCommand(sql, connection.GetAdoConnection()))
                 {
-                    AddParameters(command, sqlTokens.GetNonNullableFieldsAndValues(), connection.GetAdoConnection(), 0);
+                    AddParameters(command, sqlTokens.GetNonNullableFieldsAndValues(), 0);
                     command.ExecuteNonQuery();
                 }
             }
@@ -226,11 +226,11 @@ namespace OdpNetMicroMapper
         {
             var dic = item.GetWhereClauseOnPrimaryKeyDbStyle();
             var args = dic.Values.ToArray();
-            string whereClause = new SqlTokens(dic).AsWhereClause();
+            var whereClause = new SqlTokens(dic).AsWhereClause();
 
-            string sql = "select count(1) from " + item.TableName + " " + whereClause;
+            var sql = "select count(1) from " + item.TableName + " " + whereClause;
 
-            int count = QueryScalar<int>(sql, args);
+            var count = QueryScalar<int>(sql, args);
 
             if (count == 0)
                 Insert(item);
@@ -240,13 +240,13 @@ namespace OdpNetMicroMapper
 
         private void AddParameters(IDbCommand cmd, object[] args)
         {
-            AddParameters(cmd, args.ToDictionary(x => Guid.NewGuid().ToString(), x => x), cmd.Connection, 0);
+            AddParameters(cmd, args.ToDictionary(x => Guid.NewGuid().ToString(), x => x), 0);
         }
 
-        private void AddParameters(IDbCommand cmd, IDictionary<string, object> columnsAndValues, IDbConnection connection, int offset, bool useKeyNames = false)
+        private void AddParameters(IDbCommand cmd, IDictionary<string, object> columnsAndValues, int offset, bool useKeyNames = false)
         {
-            int index = offset;
-            foreach (KeyValuePair<string, object> o in columnsAndValues)
+            var index = offset;
+            foreach (var o in columnsAndValues)
             {
                 var parameter = cmd.CreateParameter();
                 if (useKeyNames)
@@ -255,7 +255,7 @@ namespace OdpNetMicroMapper
                     parameter.ParameterName = index.ToString();
                 if (o.Key.EndsWith("Output"))
                     parameter.Direction = ParameterDirection.Output;
-                SetParameter(parameter, o.Value, o.Key, cmd);
+                SetParameter(parameter, o.Value, cmd);
                 cmd.Parameters.Add(parameter);
                 index++;
             }
@@ -267,12 +267,12 @@ namespace OdpNetMicroMapper
             if (whereClause == null)
             {
                 var dic = item.GetWhereClauseOnPrimaryKeyDbStyle();
-                SqlTokens sqlTokens = new SqlTokens(dic);
+                var sqlTokens = new SqlTokens(dic);
                 whereClause = sqlTokens.AsWhereClause();
                 args = dic.Values.ToArray();
             }
 
-            string sql = "delete from " + item.TableName + " " + whereClause;
+            var sql = "delete from " + item.TableName + " " + whereClause;
 
             using (var connection = CreateOrReuseConnection())
             {
@@ -299,9 +299,9 @@ namespace OdpNetMicroMapper
             if (nonPrimaryKeysColumns.Count == 0)
                 return;
 
-            SqlTokens setClauseTokens = new SqlTokens(nonPrimaryKeysColumns);
+            var setClauseTokens = new SqlTokens(nonPrimaryKeysColumns);
 
-            string sql = "update " + item.TableName
+            var sql = "update " + item.TableName
                 + " " + setClauseTokens.AsSetClause(args.Length)
                 + " " + whereClause;
 
@@ -310,7 +310,7 @@ namespace OdpNetMicroMapper
                 using (var command = CreateCommand(sql, connection.GetAdoConnection()))
                 {
                     AddParameters(command, args);
-                    AddParameters(command, item.GetDictionaryInDbStyle(false), null, args.Length);
+                    AddParameters(command, item.GetDictionaryInDbStyle(false), args.Length);
                     command.ExecuteNonQuery();
                 }
             }
@@ -323,11 +323,11 @@ namespace OdpNetMicroMapper
                 using (var command = CreateCommand(sql, connection.GetAdoConnection()))
                 {
                     AddParameters(command, args);
-                    object result = command.ExecuteScalar();
+                    var result = command.ExecuteScalar();
 
 
-                    bool isString = typeof(T) == typeof(string);
-                    bool isNullableType = typeof(T).IsGenericType && typeof(T).GetGenericTypeDefinition() == typeof(Nullable<>).GetGenericTypeDefinition();
+                    var isString = typeof(T) == typeof(string);
+                    var isNullableType = typeof(T).IsGenericType && typeof(T).GetGenericTypeDefinition() == typeof(Nullable<>).GetGenericTypeDefinition();
 
                     //NULL handle
                     if (isNullableType || isString)
@@ -340,7 +340,7 @@ namespace OdpNetMicroMapper
 
                     if (isNullableType)
                     {
-                        Type type = Nullable.GetUnderlyingType(typeof(T));
+                        var type = Nullable.GetUnderlyingType(typeof(T));
                         return (T)Convert.ChangeType(result, type);
                     }
 
@@ -389,7 +389,7 @@ namespace OdpNetMicroMapper
                 {
                     AddParameters(command, args);
 
-                    using (IDataReader reader = command.ExecuteReader())
+                    using (var reader = command.ExecuteReader())
                     {
                         while (reader.Read())
                         {
@@ -408,7 +408,7 @@ namespace OdpNetMicroMapper
                 {
                     AddParameters(command, args);
 
-                    using (IDataReader reader = command.ExecuteReader())
+                    using (var reader = command.ExecuteReader())
                     {
                         while (reader.Read())
                         {
@@ -427,7 +427,7 @@ namespace OdpNetMicroMapper
                 {
                     AddParameters(command, args);
 
-                    using (IDataReader reader = command.ExecuteReader())
+                    using (var reader = command.ExecuteReader())
                     {
                         while (reader.Read())
                         {
@@ -450,13 +450,12 @@ namespace OdpNetMicroMapper
             {
                 using (var cmd = CreateCommand(null, connection.GetAdoConnection(), false))
                 {
-                    DataSet ds = new DataSet();
                     cmd.CommandText = functionName;
                     cmd.CommandType = CommandType.StoredProcedure;
 
                     //return value
                     var parameter = cmd.CreateParameter();
-                    SetParameter(parameter, default(T), "dummy", cmd, typeof(T));
+                    SetParameter(parameter, default(T), cmd, typeof(T));
                     parameter.Direction = ParameterDirection.ReturnValue;
                     cmd.Parameters.Add(parameter);
 
@@ -474,20 +473,20 @@ namespace OdpNetMicroMapper
             {
                 using (var command = CreateCommand(null, connection.GetAdoConnection(), false))
                 {
-                    DataSet ds = new DataSet();
+                    var ds = new DataSet();
                     command.CommandText = procedureName;
                     command.CommandType = CommandType.StoredProcedure;
                     AddParameters(command, args);
 
                     //Execute
-                    IDbDataAdapter da = CreateOracleDataAdapter();
+                    var da = CreateOracleDataAdapter();
                     da.SelectCommand = command;
                     da.Fill(ds);
 
                     if (ds.Tables.Count < 1)
                         return null;
 
-                    List<dynamic> list = new List<dynamic>();
+                    var list = new List<dynamic>();
 
                     foreach (DataRow row in ds.Tables[0].Rows)
                         list.Add(row.ToEntity());
