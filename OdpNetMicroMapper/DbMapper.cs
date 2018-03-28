@@ -19,14 +19,15 @@ namespace OdpNetMicroMapper
         public static volatile bool PrintSqls = false;
 
         public string ConnectionString { get; set; }
-        Type oracleConnectionType, oracleDataAdapterType, oracleClobType;
-        Connection connectionWhenCreateExternal;
-        
+        private Type _oracleConnectionType, _oracleDataAdapterType, _oracleClobType;
+        private Connection _connectionWhenCreateExternal;
+
         public DbMapper()
         {
             ConnectionString = ConfigurationManager.AppSettings["ConnectionString"];
             FindOracleDataTypes();
         }
+
 
         private void FindOracleDataTypes()
         {
@@ -39,9 +40,9 @@ namespace OdpNetMicroMapper
             }
             if (assembly == null) throw new FileNotFoundException($"Unable to load assembly {prefix}");
 
-            oracleDataAdapterType = TypeFromAssembly(assembly, $"{prefix}.Client.OracleDataAdapter");
-            oracleConnectionType = TypeFromAssembly(assembly, $"{prefix}.Client.OracleConnection");
-            oracleClobType = TypeFromAssembly(assembly, $"{prefix}.Types.OracleClob");
+            _oracleDataAdapterType = TypeFromAssembly(assembly, $"{prefix}.Client.OracleDataAdapter");
+            _oracleConnectionType = TypeFromAssembly(assembly, $"{prefix}.Client.OracleConnection");
+            _oracleClobType = TypeFromAssembly(assembly, $"{prefix}.Types.OracleClob");
         }
 
         private Assembly FindDataAccessAssembly(string partialName)
@@ -65,37 +66,36 @@ namespace OdpNetMicroMapper
         /// <summary>
         /// Use this to establish a SYSDBA connection
         /// </summary>
-        /// <param name="tns"></param>
         public void ConnectAsSys(string dataSource, string password)
         {
-            ConnectionString = String.Format("data source={0}; user id=sys; password={1}; dba privilege=sysdba", dataSource, password);
+            ConnectionString = string.Format("data source={0}; user id=sys; password={1}; dba privilege=sysdba", dataSource, password);
         }
 
         public Connection SetExternalConnection(IDbConnection connection)
         {
-            connectionWhenCreateExternal = CreateOrReuseConnection(connection);
-            return connectionWhenCreateExternal;
+            _connectionWhenCreateExternal = CreateOrReuseConnection(connection);
+            return _connectionWhenCreateExternal;
         }
 
         public Connection OpenConnection()
         {
-            if (connectionWhenCreateExternal != null)
+            if (_connectionWhenCreateExternal != null)
                 throw new Exception("Cannot open new Connection. Already open");
-            connectionWhenCreateExternal = CreateOrReuseConnection();
-            return connectionWhenCreateExternal;
+            _connectionWhenCreateExternal = CreateOrReuseConnection();
+            return _connectionWhenCreateExternal;
         }
 
         private Connection CreateOrReuseConnection(IDbConnection connection = null)
         {
-            if (connectionWhenCreateExternal != null)
+            if (_connectionWhenCreateExternal != null)
             {
-                connectionWhenCreateExternal.NextLevel();
-                return connectionWhenCreateExternal;
+                _connectionWhenCreateExternal.NextLevel();
+                return _connectionWhenCreateExternal;
             }
 
             if (connection == null)
             {
-                connection = (IDbConnection)Activator.CreateInstance(oracleConnectionType);
+                connection = (IDbConnection)Activator.CreateInstance(_oracleConnectionType);
                 connection.ConnectionString = ConnectionString;
                 connection.Open();
             }
@@ -104,18 +104,18 @@ namespace OdpNetMicroMapper
 
         internal void ReleaseConnection()
         {
-            connectionWhenCreateExternal = null;
+            _connectionWhenCreateExternal = null;
         }
 
         public IDbDataAdapter CreateOracleDataAdapter()
         {
-            return (IDbDataAdapter)Activator.CreateInstance(oracleDataAdapterType);
+            return (IDbDataAdapter)Activator.CreateInstance(_oracleDataAdapterType);
         }
 
         public object CreateClob(string text, IDbConnection connection)
         {
-            object clob = Activator.CreateInstance(oracleClobType, new object[] { connection });
-            MethodInfo method = oracleClobType.GetMethod("Append", new Type[] { typeof(char[]), typeof(int), typeof(int) });
+            object clob = Activator.CreateInstance(_oracleClobType, new object[] { connection });
+            MethodInfo method = _oracleClobType.GetMethod("Append", new Type[] { typeof(char[]), typeof(int), typeof(int) });
             method.Invoke(clob, new object[] { text.ToCharArray(), 0, text.Length });
             return clob;
         }
@@ -134,7 +134,7 @@ namespace OdpNetMicroMapper
             cmd.GetType().GetProperty("InitialLONGFetchSize")
                 .SetValue(cmd, 1024 * 64, null); //reade up to 64kb with long columns
 
-            if (sql!=null)
+            if (sql != null)
                 cmd.CommandText = sql;
 
             return cmd;
@@ -301,7 +301,7 @@ namespace OdpNetMicroMapper
 
             SqlTokens setClauseTokens = new SqlTokens(nonPrimaryKeysColumns);
 
-            string sql = "update " + item.TableName 
+            string sql = "update " + item.TableName
                 + " " + setClauseTokens.AsSetClause(args.Length)
                 + " " + whereClause;
 
@@ -361,7 +361,7 @@ namespace OdpNetMicroMapper
                     {
                         command.ExecuteNonQuery();
                     }
-                    catch(Exception ex)
+                    catch (Exception ex)
                     {
                         Console.WriteLine("Db Exception ignored: " + ex.Message);
                     }
@@ -419,7 +419,7 @@ namespace OdpNetMicroMapper
             }
         }
 
-        public IEnumerable<T> QuerySingleTypeList<T>(string sql, params object[] args) 
+        public IEnumerable<T> QuerySingleTypeList<T>(string sql, params object[] args)
         {
             using (var connection = CreateOrReuseConnection())
             {
@@ -483,12 +483,12 @@ namespace OdpNetMicroMapper
                     IDbDataAdapter da = CreateOracleDataAdapter();
                     da.SelectCommand = command;
                     da.Fill(ds);
-                    
+
                     if (ds.Tables.Count < 1)
                         return null;
 
                     List<dynamic> list = new List<dynamic>();
-                    
+
                     foreach (DataRow row in ds.Tables[0].Rows)
                         list.Add(row.ToEntity());
                     return list;
@@ -500,6 +500,7 @@ namespace OdpNetMicroMapper
         /// Set OracleDbType on a OracleParameter without a reference to Oracle DataAccess
         /// <param name="parameter"></param>
         /// <param name="type">Clob, Blob etc.</param>
+        /// </summary>
         public void SetParameterOracleDbType(IDbDataParameter parameter, string type)
         {
             var pOracleDbType = parameter.GetType().GetProperty("OracleDbType");

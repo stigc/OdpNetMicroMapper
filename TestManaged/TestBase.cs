@@ -96,10 +96,10 @@ namespace TestManaged
         [SetUp]
         public void CreateSchema()
         {
-            throw new Exception("Please set 'data source' and 'password' in function CreateSchema()");
+            //throw new Exception("Please set 'data source' and 'password' in function CreateSchema()");
 
-            sysOrm.ConnectAsSys("tns", "password");
-            orm.ConnectionString = "data source=tns;user id=onmm2;password=onmm2;";
+            sysOrm.ConnectAsSys("INTSHARE", "bi");
+            orm.ConnectionString = "data source=INTSHARE;user id=onmm2;password=onmm2;";
 
             CreateUser();
 

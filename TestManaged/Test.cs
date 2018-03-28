@@ -30,7 +30,7 @@ namespace TestManaged
         {
             var guid = new Guid();
             orm.NonQuery("insert into onmm2.rawtest (bytes) values (:0)", guid.ToByteArray());
-        
+
             var bytesLoaded = orm.QueryScalar<byte[]>("select bytes from onmm2.rawtest where rownum = 1");
             var guidLoaded = new Guid(bytesLoaded);
             Assert.AreEqual(guid, guidLoaded);
@@ -48,7 +48,7 @@ namespace TestManaged
             item.Id = 3;
             item.Name = "Third Item";
             item.DateValue = DateTime.Today;
-            if (type=="double") item.DecimalValue = 3.1415d;
+            if (type == "double") item.DecimalValue = 3.1415d;
             if (type == "float") item.DecimalValue = 3.1415f;
             if (type == "decimal") item.DecimalValue = 3.1415m;
 
@@ -80,7 +80,7 @@ namespace TestManaged
         public void InsertWithLongColumnMax4000chars()
         {
             dynamic item = new Entity("onmm2.item_with_long");
-            item.Text = new string('X', 1000 * 4 ); //max 4k when inserting!
+            item.Text = new string('X', 1000 * 4); //max 4k when inserting!
             orm.Insert(item);
 
             var items = orm.Query("select * from onmm2.item_with_long");
@@ -92,7 +92,7 @@ namespace TestManaged
         {
             dynamic item = new Entity("onmm2.item");
             Assert.AreEqual(2, orm.QueryScalar<int>("select count(1) from onmm2.item"));
-            
+
             orm.Delete(item, "where id = :0", 1);
             Assert.AreEqual(1, orm.QueryScalar<int>("select count(1) from onmm2.item"));
 
@@ -216,8 +216,8 @@ namespace TestManaged
         public void QueryDynamicToString()
         {
             var item = orm.Query("select * from onmm2.item where id = 1").Single();
-            Assert.That(item.ToString(), Is.StringContaining("Id = 1"));
-            Assert.That(item.ToString(), Is.StringContaining("Name = First Item"));
+            Assert.That(item.ToString(), Contains.Substring("Id = 1"));
+            Assert.That(item.ToString(), Contains.Substring("Name = First Item"));
         }
 
         [Test]
@@ -280,7 +280,7 @@ namespace TestManaged
 
         [Test]
         public void ExecuteFunctionWithString()
-       { 
+        {
             var result = orm.ExecuteFunction<string>("onmm2.append1function", "100");
             Assert.AreEqual("1001", result);
         }
@@ -373,7 +373,7 @@ namespace TestManaged
         public void InsertAndSelectBigClob()
         {
             //this is at least 5 MB
-            string largeString = new string ('X', 1024*1024*5);
+            string largeString = new string('X', 1024 * 1024 * 5);
 
             //insert
             dynamic item = new Entity("onmm2.bigclobtest");
@@ -497,7 +497,7 @@ namespace TestManaged
         {
             ItemWithCollection item = new ItemWithCollection();
             item.Id = 3;
-            item.GroupsNotPresentInDb = new List<int>() { 1 }; 
+            item.GroupsNotPresentInDb = new List<int>() { 1 };
             orm.Insert(item, "onmm2.item");
         }
 
