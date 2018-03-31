@@ -8,6 +8,7 @@
     <PackageReference Include="NUnit" Version="3.10.1" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Oracle.DataAccess, Version=2.112.3.0, Culture=neutral, PublicKeyToken=89b483f429c47342, processorArchitecture=x86">
+      <HintPath>C:\Oracle\Product\11.2.0.3.0_32\odp.net\bin\2.x\Oracle.DataAccess.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
   </ItemGroup>
