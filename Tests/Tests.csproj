@@ -9,6 +9,7 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Oracle.DataAccess">
       <HintPath>..\..\..\..\Oracle\Product\11.2.0.3.0_32\odp.net\bin\2.x\Oracle.DataAccess.dll</HintPath>
+      <Private>true</Private>
     </Reference>
   </ItemGroup>
 
