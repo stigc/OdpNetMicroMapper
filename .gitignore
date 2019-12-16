@@ -45,3 +45,16 @@ $RECYCLE.BIN/
 Network Trash Folder
 Temporary Items
 .apdisk
+
+# Build results
+[Dd]ebug/
+[Rr]elease/
+[Bb]in/
+[Oo]bj/
+[Oo]utput*/
+packages/
+# Visual Studio
+.vs/
+_NCrunch*/
+*.ncrunchsolution
+*.user

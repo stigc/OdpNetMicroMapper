@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Data;
-using System.Reflection;
 using System.Collections;
 
 namespace OdpNetMicroMapper
@@ -18,13 +17,13 @@ namespace OdpNetMicroMapper
 
         public static string UnCammelCase(this string name)
         {
-            string s = "";
+            var s = "";
 
-            foreach (char c in name)
+            foreach (var c in name)
             {
                 if (char.IsUpper(c) && s.Length>0)
                     s += "_";
-                s += Char.ToLower(c);
+                s += char.ToLower(c);
             }
 
             return s;
@@ -44,12 +43,12 @@ namespace OdpNetMicroMapper
 
         public static string CammelCase(this string name)
         {
-            string s = "";
-            bool nextIsToUpper = true;
+            var s = "";
+            var nextIsToUpper = true;
 
-            for (int i = 0; i < name.Length; i++)
+            for (var i = 0; i < name.Length; i++)
             {
-                char c = name[i];
+                var c = name[i];
 
                 if (IsUnderscoreAndIsReverseable(name, i))
                 {
@@ -97,7 +96,7 @@ namespace OdpNetMicroMapper
         public static Entity ToEntity(this IDataReader rdr)
         {
             var dic = new Dictionary<string, object>();
-            for (int i = 0; i < rdr.FieldCount; i++)
+            for (var i = 0; i < rdr.FieldCount; i++)
             {
                 try
                 {
@@ -121,19 +120,19 @@ namespace OdpNetMicroMapper
 
         public static T ToObject<T>(this IDataReader rdr) where T : new()
         {
-            T o = new T();
-            for (int i = 0; i < rdr.FieldCount; i++)
+            var o = new T();
+            for (var i = 0; i < rdr.FieldCount; i++)
             {
                 var name = rdr.GetName(i).CammelCase();
-                PropertyInfo pi = o.GetType().GetProperty(name);
+                var pi = o.GetType().GetProperty(name);
                 if (pi != null)
                 {
                     try
                     {
-                        Type type = Nullable.GetUnderlyingType(pi.PropertyType)
+                        var type = Nullable.GetUnderlyingType(pi.PropertyType)
                                          ?? pi.PropertyType;
 
-                        object value = DBNull.Value.Equals(rdr[i]) ? null :
+                        var value = DBNull.Value.Equals(rdr[i]) ? null :
                                         Convert.ChangeType(rdr[i], type);
 
                         pi.SetValue(o, value, null);

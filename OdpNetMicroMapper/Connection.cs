@@ -5,41 +5,40 @@ namespace OdpNetMicroMapper
 {
     public class Connection : IDisposable
     {
-        int level = 0;
-        IDbConnection connection;
-        DbMapper orm;
+        private int _level;
+        private readonly IDbConnection _connection;
+        private readonly DbMapper _orm;
         public IDbConnection GetAdoConnection()
         {
-            return connection;
+            return _connection;
         }
 
         public Connection(DbMapper orm, IDbConnection connection)
         {
-            this.orm = orm;
-            this.connection = connection;
+            _orm = orm;
+            _connection = connection;
         }
 
         public void NextLevel()
         {
-            level++; 
+            _level++; 
         }
 
         public IDbTransaction BeginTransaction()
         {
-            return connection.BeginTransaction();
+            return _connection.BeginTransaction();
         }
-
 
         public void Dispose()
         {
-            if (level == 0)
+            if (_level == 0)
             {
-                connection.Dispose();
-                orm.ReleaseConnection();
+                _connection.Dispose();
+                _orm.ReleaseConnection();
             }
             else
             {
-                level--;
+                _level--;
             }
         }
     }
